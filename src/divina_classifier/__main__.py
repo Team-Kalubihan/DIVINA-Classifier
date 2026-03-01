@@ -1,12 +1,11 @@
+from PIL import Image
 import sys
 import os
-from models.resnet import ResNet50Classifier
-from utils.image_processing import load_image
-from globals import DEVICE
+from divina_classifier.models.resnet import ResNet50Classifier
 
 def main():
     if len(sys.argv) < 2:
-        print("Usage: python src/main.py <path_to_image>")
+        print("Usage: divina-classify <path_to_image>  OR  python -m divina_classifier <path_to_image>")
         return
 
     image_path = sys.argv[1]
@@ -20,13 +19,14 @@ def main():
 
     print(f"Processing image: {image_path}...")
     try:
-        input_tensor = load_image(image_path).to(DEVICE)
+        # Pass raw PIL image directly to predict
+        image = Image.open(image_path)
     except Exception as e:
         print(f"Error loading image: {e}")
         return
 
     print("Running inference...")
-    result = classifier.predict(input_tensor)
+    result = classifier.predict(image)
 
     print("-" * 30)
     print(f"Prediction: {result['label']}")

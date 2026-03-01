@@ -1,6 +1,9 @@
 import torch
 from torchvision.models import resnet50, ResNet50_Weights
-from globals import DEVICE
+from divina_classifier.globals import DEVICE
+from divina_classifier.utils.image_processing import preprocess_image
+from PIL import Image
+from typing import Union
 
 class ResNet50Classifier:
     def __init__(self, compile=False):
@@ -14,7 +17,13 @@ class ResNet50Classifier:
         
         self.categories = self.weights.meta["categories"]
 
-    def predict(self, input_tensor, confidence_min=0.5):
+    def predict(self, input_data: Union[torch.Tensor, Image.Image], confidence_min=0.5):
+        """Run prediction on a preprocessed tensor OR a raw PIL image."""
+        if isinstance(input_data, Image.Image):
+            input_tensor = preprocess_image(input_data).to(DEVICE)
+        else:
+            input_tensor = input_data
+
         with torch.no_grad():
             output = self.model(input_tensor)
         

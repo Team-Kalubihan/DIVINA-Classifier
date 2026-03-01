@@ -1,7 +1,11 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
 [project]
 name = "divina-classifier"
 version = "0.1.0"
-description = "Add your description here"
+description = "Marine life classification engine for the DIVINA Project"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
@@ -10,6 +14,26 @@ dependencies = [
     "opencv-contrib-python>=4.13.0.92",
     "pandas>=3.0.1",
     "roboflow>=1.2.15",
-    "torch>=2.10.0",
-    "torchvision>=0.25.0",
+    "torch",
+    "torchvision",
+    "pillow>=10.0.0",
 ]
+
+[project.scripts]
+divina-classify = "divina_classifier.main:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/divina_classifier"]
+
+[tool.uv.sources]
+torch = [
+  { index = "pytorch-cu130", marker = "sys_platform == 'linux'" },
+]
+torchvision = [
+  { index = "pytorch-cu130", marker = "sys_platform == 'linux'" },
+]
+
+[[tool.uv.index]]
+name = "pytorch-cu130"
+url = "https://download.pytorch.org/whl/cu130"
+explicit = true
