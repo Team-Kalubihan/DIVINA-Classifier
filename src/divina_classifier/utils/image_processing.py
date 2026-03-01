@@ -1,5 +1,6 @@
 from torchvision import transforms
 from PIL import Image
+import torch
 
 def get_transform():
     return transforms.Compose([
@@ -12,7 +13,14 @@ def get_transform():
         )
     ])
 
-def load_image(image_path):
-    image = Image.open(image_path).convert('RGB')
+def preprocess_image(image: Image.Image) -> torch.Tensor:
+    """Preprocess a PIL image for model inference."""
+    if image.mode != 'RGB':
+        image = image.convert('RGB')
     transform = get_transform()
     return transform(image).unsqueeze(0)  # Add batch dimension
+
+def load_image(image_path: str) -> torch.Tensor:
+    """Load an image from a path and preprocess it."""
+    image = Image.open(image_path)
+    return preprocess_image(image)
